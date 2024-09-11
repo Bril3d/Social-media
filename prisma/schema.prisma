@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String    @db.VarChar(255)
+  email     String    @unique @db.VarChar(191)
+  password  String    @db.VarChar(255)
+  avatar    String?   @db.VarChar(255)
+  posts     Post[]
+  reactions Reaction[]
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([email])
+}
+
+model Post {
+  id            String     @id @default(cuid())
+  content       String     @db.Text
+  image         String?    @db.VarChar(255)
+  authorId      String     @db.VarChar(191)
+  author        User       @relation(fields: [authorId], references: [id])
+  reactions     Reaction[]
+  reactionCount Int        @default(0)
+  comments      Comment[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([authorId])
+}
+
+model Reaction {
+  id           String   @id @default(cuid())
+  post         Post     @relation(fields: [postId], references: [id])
+  postId       String   @db.VarChar(191)
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String   @db.VarChar(191)
+  reactionType String   @db.VarChar(50)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([userId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  postId    String   @db.VarChar(191)
+  post      Post     @relation(fields: [postId], references: [id])
+  authorId  String   @db.VarChar(191)
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+  @@index([authorId])
+}

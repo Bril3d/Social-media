@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
-import { authOptions } from "./api/auth/[...nextauth]/route"
+import { authOptions } from "../api/auth/[...nextauth]/route"
 import { App } from "@/components/app"
 import prisma from '@/lib/prisma'
 
@@ -13,19 +13,9 @@ export default async function Page() {
 
   const posts = await prisma.post.findMany({
     include: {
-      author: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          avatar: true,
-        },
-      },
+      author: true,
       reactions: true,
       comments: true,
-    },
-    orderBy: {
-      createdAt: 'desc',
     },
   });
 
