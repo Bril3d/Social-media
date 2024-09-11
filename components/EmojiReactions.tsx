@@ -20,7 +20,7 @@ export default function EmojiReactions({ reactions, totalReactions, onReact }: E
   return (
     <div className="flex items-center space-x-2">
       <div className="flex -space-x-1">
-        {reactions.map((reaction) => (
+        {reactions.length > 0 && reactions.map((reaction) => (
          
             <div key={reaction.id} className="w-5 h-5 rounded-full bg-white shadow flex items-center justify-center">
               {emojis[reaction.reactionType as keyof typeof emojis]}
