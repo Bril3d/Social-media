@@ -34,7 +34,7 @@ export async function GET() {
         reactionCount: post.reactions.length,
       };
     });
-    console.log(postsWithGroupedReactions)
+    
     return NextResponse.json(postsWithGroupedReactions);
   } catch (error) {
     console.error('Error fetching posts:', error);

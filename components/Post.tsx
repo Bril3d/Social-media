@@ -15,6 +15,7 @@ export default function Post({ post }: PostProps) {
   const { data: session } = useSession()
   const [groupedReactions, setGroupedReactions] = useState(post.groupedReactions || []);
   const [totalReactions, setTotalReactions] = useState(post.reactionCount || 0);
+  console.log(totalReactions)
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -37,7 +38,6 @@ export default function Post({ post }: PostProps) {
         return [...prev, { reactionType, count: 1 }];
       }
     });
-    setTotalReactions(prev => prev + 1);
 
     try {
       const response = await fetch('/api/react', {
@@ -48,11 +48,12 @@ export default function Post({ post }: PostProps) {
 
       if (!response.ok) throw new Error('Failed to react');
 
-      const { groupedReactions: updatedGroupedReactions, reactionCount } = await response.json();
+      const { groupedReactions: updatedGroupedReactions, updatedReactionCount } = await response.json();
 
       // Update with server response
       setGroupedReactions(updatedGroupedReactions);
-      setTotalReactions(reactionCount);
+      setTotalReactions(updatedReactionCount);
+
     } catch (error) {
       console.error('Error reacting to post:', error);
       // Revert optimistic update on error
@@ -63,7 +64,6 @@ export default function Post({ post }: PostProps) {
             : r
         ).filter(r => r.count > 0)
       );
-      setTotalReactions(prev => prev - 1);
     }
   }
 
