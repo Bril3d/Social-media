@@ -22,6 +22,10 @@ export interface Comment {
 
 export interface Post {
   reactionCount: number;
+  groupedReactions: {
+    reactionType: string;
+    count: number;
+  }[];
   id: number;
   content: string;
   image?: string;

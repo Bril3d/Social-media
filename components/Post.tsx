@@ -25,7 +25,6 @@ export default function Post({ post }: PostProps) {
   const handleReact = async (reactionType: string) => {
     if (!session?.user?.id) return;
 
-    // Optimistic update
     setGroupedReactions(prev => {
       const existingReaction = prev.find(r => r.reactionType === reactionType);
       if (existingReaction) {
@@ -50,13 +49,12 @@ export default function Post({ post }: PostProps) {
 
       const { groupedReactions: updatedGroupedReactions, updatedReactionCount } = await response.json();
 
-      // Update with server response
       setGroupedReactions(updatedGroupedReactions);
       setTotalReactions(updatedReactionCount);
 
     } catch (error) {
       console.error('Error reacting to post:', error);
-      // Revert optimistic update on error
+
       setGroupedReactions(prev => 
         prev.map(r => 
           r.reactionType === reactionType 

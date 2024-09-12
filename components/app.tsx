@@ -6,6 +6,7 @@ import Sidebar from './Sidebar'
 import CreatePost from './CreatePost'
 import PostList from './PostList'
 import { Post } from './types'
+import { Button } from './ui/button'
 
 interface AppProps {
   initialPosts: Post[]
@@ -13,6 +14,7 @@ interface AppProps {
 
 export function App({ initialPosts }: AppProps) {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
+  console.log(initialPosts)
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -55,8 +57,10 @@ export function App({ initialPosts }: AppProps) {
     <div className="flex bg-gray-100 min-h-screen">
       <Sidebar />
       <main className="flex-1 p-4">
-        <p>Welcome, {session.user?.name}</p>
-        <button onClick={() => signOut({ callbackUrl: '/signin' })}>Sign Out</button>
+        <div className="flex justify-between items-center py-4">
+          <p>Welcome, {session.user?.name}</p>
+          <Button variant="destructive" onClick={() => signOut({ callbackUrl: '/signin' })}>Sign Out</Button>
+        </div>
         <CreatePost onPostSubmit={addPost} />
         <PostList posts={posts} />
       </main>
