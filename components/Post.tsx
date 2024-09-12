@@ -12,9 +12,8 @@ interface PostProps {
 }
 
 export default function Post({ post }: PostProps) {
-  console.log(post)
   const { data: session } = useSession()
-  const [postReactions, setPostReactions] = useState(post.reactions || {});
+  const [groupedReactions, setGroupedReactions] = useState(post.groupedReactions || []);
   const [totalReactions, setTotalReactions] = useState(post.reactionCount || 0);
 
   const formatTimestamp = (timestamp: string) => {
@@ -23,22 +22,48 @@ export default function Post({ post }: PostProps) {
   };
 
   const handleReact = async (reactionType: string) => {
+    if (!session?.user?.id) return;
+
+    // Optimistic update
+    setGroupedReactions(prev => {
+      const existingReaction = prev.find(r => r.reactionType === reactionType);
+      if (existingReaction) {
+        return prev.map(r => 
+          r.reactionType === reactionType 
+            ? { ...r, count: r.count + 1 }
+            : r
+        );
+      } else {
+        return [...prev, { reactionType, count: 1 }];
+      }
+    });
+    setTotalReactions(prev => prev + 1);
+
     try {
       const response = await fetch('/api/react', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ postId: post.id, reactionType, userId: session?.user?.id }),
+        body: JSON.stringify({ postId: post.id, reactionType, userId: session.user.id }),
       });
 
       if (!response.ok) throw new Error('Failed to react');
 
-      const { groupedReactions, updatedReactionCount } = await response.json();
+      const { groupedReactions: updatedGroupedReactions, reactionCount } = await response.json();
 
-      setPostReactions(groupedReactions);
-
-      setTotalReactions(updatedReactionCount);
+      // Update with server response
+      setGroupedReactions(updatedGroupedReactions);
+      setTotalReactions(reactionCount);
     } catch (error) {
       console.error('Error reacting to post:', error);
+      // Revert optimistic update on error
+      setGroupedReactions(prev => 
+        prev.map(r => 
+          r.reactionType === reactionType 
+            ? { ...r, count: Math.max(0, r.count - 1) }
+            : r
+        ).filter(r => r.count > 0)
+      );
+      setTotalReactions(prev => prev - 1);
     }
   }
 
@@ -65,7 +90,7 @@ export default function Post({ post }: PostProps) {
       <CardFooter className="flex flex-col items-start">
         <EmojiReactions
           totalReactions={totalReactions}
-          reactions={postReactions || {}}
+          groupedReactions={groupedReactions || {}}
           onReact={handleReact}
         />
         <div className="flex justify-between w-full mt-2">

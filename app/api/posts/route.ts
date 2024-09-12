@@ -6,11 +6,7 @@ export async function GET() {
     const posts = await prisma.post.findMany({
       include: {
         author: true,
-        reactions: {
-          include: {
-            user: true,
-          },
-        },
+        reactions: true,
         comments: {
           include: {
             author: true,
@@ -21,7 +17,25 @@ export async function GET() {
         createdAt: 'desc',
       },
     });
-    return NextResponse.json(posts);
+
+    // Group reactions by type for each post
+    const postsWithGroupedReactions = posts.map(post => {
+      const groupedReactions = post.reactions.reduce((acc, reaction) => {
+        acc[reaction.reactionType] = (acc[reaction.reactionType] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      return {
+        ...post,
+        groupedReactions: Object.entries(groupedReactions).map(([reactionType, count]) => ({
+          reactionType,
+          count,
+        })),
+        reactionCount: post.reactions.length,
+      };
+    });
+    console.log(postsWithGroupedReactions)
+    return NextResponse.json(postsWithGroupedReactions);
   } catch (error) {
     console.error('Error fetching posts:', error);
     return NextResponse.json({ error: 'Error fetching posts' }, { status: 500 });
