@@ -1,5 +1,5 @@
 import Post from './Post.tsx';
-import { Post as PostType } from './types.ts';
+import { Post as PostType } from '../types.js';
 
 interface PostListProps {
   posts: PostType[];

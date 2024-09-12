@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import Sidebar from './Sidebar'
-import CreatePost from './CreatePost'
-import PostList from './PostList'
+import CreatePost from './Posts/CreatePost'
+import PostList from './Posts/PostList'
+import PostSkeleton from './Posts/PostSkeleton'
 import { Post } from './types'
 import { Button } from './ui/button'
 
@@ -14,12 +15,15 @@ interface AppProps {
 
 export function App({ initialPosts }: AppProps) {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
-  console.log(initialPosts)
+  const [isLoading, setIsLoading] = useState(true);
   const { data: session, status } = useSession();
 
   useEffect(() => {
     console.log("Client-side session:", session);
     console.log("Session status:", status);
+    if (status !== "loading") {
+      setIsLoading(false);
+    }
   }, [session, status]);
 
   const addPost = async (content: string) => {
@@ -46,7 +50,18 @@ export function App({ initialPosts }: AppProps) {
   };
 
   if (status === "loading") {
-    return <div>Loading...</div>
+    return (
+      <div className="flex bg-gray-100 min-h-screen">
+        <Sidebar />
+        <main className="flex-1 p-4">
+          <div className="space-y-4">
+            {[...Array(3)].map((_, index) => (
+              <PostSkeleton key={index} />
+            ))}
+          </div>
+        </main>
+      </div>
+    );
   }
 
   if (!session) {
@@ -62,7 +77,15 @@ export function App({ initialPosts }: AppProps) {
           <Button variant="destructive" onClick={() => signOut({ callbackUrl: '/signin' })}>Sign Out</Button>
         </div>
         <CreatePost onPostSubmit={addPost} />
-        <PostList posts={posts} />
+        {isLoading ? (
+          <div className="space-y-4">
+            {[...Array(3)].map((_, index) => (
+              <PostSkeleton key={index} />
+            ))}
+          </div>
+        ) : (
+          <PostList posts={posts} />
+        )}
       </main>
     </div>
   );

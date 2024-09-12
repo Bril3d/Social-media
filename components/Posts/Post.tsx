@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { MessageCircleIcon, ShareIcon } from 'lucide-react'
-import { Post as PostType } from './types.ts'
+import { Post as PostType } from '../types.js'
 import EmojiReactions from './EmojiReactions'
 import { useSession } from "next-auth/react"
 import { useState } from 'react'
