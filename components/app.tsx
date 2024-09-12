@@ -8,6 +8,7 @@ import PostList from './Posts/PostList'
 import PostSkeleton from './Posts/PostSkeleton'
 import { Post } from './types'
 import { Button } from './ui/button'
+import { ModeToggle } from './ModeToggle'
 
 interface AppProps {
   initialPosts: Post[]
@@ -51,7 +52,7 @@ export function App({ initialPosts }: AppProps) {
 
   if (status === "loading") {
     return (
-      <div className="flex bg-gray-100 min-h-screen">
+      <div className="flex bg-gray-100 dark:bg-slate-900 min-h-screen">
         <Sidebar />
         <main className="flex-1 p-4">
           <div className="space-y-4">
@@ -69,12 +70,15 @@ export function App({ initialPosts }: AppProps) {
   }
 
   return (
-    <div className="flex bg-gray-100 min-h-screen">
+    <div className="flex bg-gray-100 dark:bg-slate-900 min-h-screen">
       <Sidebar />
       <main className="flex-1 p-4">
         <div className="flex justify-between items-center py-4">
           <p>Welcome, {session.user?.name}</p>
-          <Button variant="destructive" onClick={() => signOut({ callbackUrl: '/signin' })}>Sign Out</Button>
+          <div className="flex items-center space-x-4">
+            <ModeToggle />
+            <Button variant="destructive" onClick={() => signOut({ callbackUrl: '/signin' })}>Sign Out</Button>
+          </div>
         </div>
         <CreatePost onPostSubmit={addPost} />
         {isLoading ? (

@@ -16,20 +16,19 @@ const emojis = {
 };
 
 export default function EmojiReactions({ groupedReactions, totalReactions, onReact }: EmojiReactionsProps) {
-  console.log(groupedReactions)
   return (
     <div className="flex items-center space-x-2">
       <div className="flex -space-x-1">
         {groupedReactions.length > 0 && groupedReactions.map((reaction) => (
-          <div key={reaction.reactionType} className="w-5 h-5 rounded-full bg-white shadow flex items-center justify-center">
+          <div key={reaction.reactionType} className="w-5 h-5 rounded-full bg-white dark:bg-gray-700 shadow flex items-center justify-center">
             {emojis[reaction.reactionType as keyof typeof emojis]}
           </div>
         ))}
       </div>
-      <span className="text-sm text-gray-500">{totalReactions || 0}</span>
+      <span className="text-sm text-gray-500 dark:text-gray-400">{totalReactions || 0}</span>
       <div className="flex space-x-1">
         {Object.entries(emojis).map(([type, emoji], index) => (
-          <Button key={index} variant="ghost" size="sm" className="p-1" onClick={() => onReact(type)}>
+          <Button key={index} variant="ghost" size="sm" className="p-1 text-gray-600 dark:text-gray-400" onClick={() => onReact(type)}>
             {emoji}
           </Button>
         ))}
