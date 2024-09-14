@@ -19,6 +19,10 @@ model User {
   email     String    @unique @db.VarChar(191)
   password  String    @db.VarChar(255)
   avatar    String?   @db.VarChar(255)
+  cover     String?   @db.VarChar(255)
+  bio       String?   @db.Text
+  location  String?   @db.VarChar(255)
+  website   String?   @db.VarChar(255)
   posts     Post[]
   reactions Reaction[]
   comments  Comment[]

@@ -2,7 +2,16 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  avatar?: string; // Make avatar optional
+  avatar?: string;
+  cover?: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+  posts?: Post[];
+  reactions?: Reaction[];
+  comments?: Comment[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Reaction {
@@ -10,6 +19,10 @@ export interface Reaction {
   type: string;
   userId: string;
   user: User;
+  postId: number;
+  post: Post;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Comment {
@@ -18,6 +31,14 @@ export interface Comment {
   authorId: string;
   author: User;
   createdAt: string;
+  updatedAt: string;
+  postId: number;
+  post: Post;
+  reactions: Reaction[];
+  comments: Comment[];
+  parentId?: number;
+  parent?: Comment;
+  children?: Comment[];
 }
 
 export interface Post {
@@ -35,4 +56,5 @@ export interface Post {
   comments: Comment[];
   createdAt: string;
   updatedAt: string;
+  commentsCount?: number;
 }
