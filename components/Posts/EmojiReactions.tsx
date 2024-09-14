@@ -1,4 +1,10 @@
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface EmojiReactionsProps {
   groupedReactions: { reactionType: string; count: number }[];
@@ -17,13 +23,25 @@ const emojis = {
 
 export default function EmojiReactions({ groupedReactions, totalReactions, onReact }: EmojiReactionsProps) {
   return (
+
     <div className="flex items-center space-x-2">
       <div className="flex -space-x-1">
+
         {groupedReactions.length > 0 && groupedReactions.map((reaction) => (
-          <div key={reaction.reactionType} className="w-5 h-5 rounded-full bg-white dark:bg-gray-700 shadow flex items-center justify-center">
-            {emojis[reaction.reactionType as keyof typeof emojis]}
-          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <div key={reaction.reactionType} className="w-5 h-5 rounded-full bg-white dark:bg-gray-700 shadow flex items-center justify-center">
+                  {emojis[reaction.reactionType as keyof typeof emojis]}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{reaction.count}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         ))}
+
       </div>
       <span className="text-sm text-gray-500 dark:text-gray-400">{totalReactions || 0}</span>
       <div className="flex space-x-1">
