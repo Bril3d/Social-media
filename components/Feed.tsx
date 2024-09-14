@@ -14,19 +14,13 @@ interface FeedProps {
 export function Feed({ initialPosts }: FeedProps) {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
 
-  const addPost = async (content: string) => {
-    const response = await fetch('/api/posts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ content }),
-    });
+  const addPost = async (newPost: Post) => {
 
-    if (response.ok) {
-      const newPost = await response.json();
-      setPosts([newPost, ...posts]);
-    }
+
+
+
+    setPosts([newPost, ...posts]);
+
   };
 
   return (

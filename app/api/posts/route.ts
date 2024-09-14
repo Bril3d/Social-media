@@ -1,5 +1,13 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { writeFile } from 'fs/promises';
+import { join } from 'path';
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 export async function GET() {
   try {
@@ -42,14 +50,32 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const { content, authorId, image } = await request.json();
+    const formData = await req.formData();
+    const content = formData.get('content') as string;
+    const authorId = formData.get('authorId') as string;
+    const imageFile = formData.get('image') as File | null;
+
+    let imagePath = null;
+
+    if (imageFile) {
+      const bytes = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+
+      const fileName = `${Date.now()}-${imageFile.name}`;
+      const uploadDir = join(process.cwd(), 'public', 'uploads');
+      const filePath = join(uploadDir, fileName);
+
+      await writeFile(filePath, buffer);
+      imagePath = `/uploads/${fileName}`;
+    }
+
     const post = await prisma.post.create({
       data: {
         content,
         authorId,
-        image,
+        image: imagePath,
       },
       include: {
         author: true,
@@ -57,7 +83,8 @@ export async function POST(request: Request) {
         comments: true,
       },
     });
-    return NextResponse.json(post);
+
+    return NextResponse.json(post, { status: 201 });
   } catch (error) {
     console.error('Error creating post:', error);
     return NextResponse.json({ error: 'Error creating post' }, { status: 500 });

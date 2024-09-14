@@ -28,10 +28,10 @@ export default function EmojiReactions({ groupedReactions, totalReactions, onRea
       <div className="flex -space-x-1">
 
         {groupedReactions.length > 0 && groupedReactions.map((reaction) => (
-          <TooltipProvider>
+          <TooltipProvider key={reaction.reactionType}>
             <Tooltip>
               <TooltipTrigger>
-                <div key={reaction.reactionType} className="w-5 h-5 rounded-full bg-white dark:bg-gray-700 shadow flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-white dark:bg-gray-700 shadow flex items-center justify-center">
                   {emojis[reaction.reactionType as keyof typeof emojis]}
                 </div>
               </TooltipTrigger>
