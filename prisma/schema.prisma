@@ -14,22 +14,41 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String    @db.VarChar(255)
-  email     String    @unique @db.VarChar(191)
-  password  String    @db.VarChar(255)
-  avatar    String?   @db.VarChar(255)
-  cover     String?   @db.VarChar(255)
-  bio       String?   @db.Text
-  location  String?   @db.VarChar(255)
-  website   String?   @db.VarChar(255)
-  posts     Post[]
-  reactions Reaction[]
-  comments  Comment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id             String    @id @default(cuid())
+  name           String
+  email          String    @unique
+  password       String
+  avatar         String?
+  slug           String    @unique
+  posts          Post[]
+  reactions      Reaction[]
+  comments       Comment[]
+  sentRequests   FriendRequest[] @relation("SentFriendRequests")
+  receivedRequests FriendRequest[] @relation("ReceivedFriendRequests")
+  friends        Friend[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
 
-  @@index([email])
+model FriendRequest {
+  id         String   @id @default(cuid())
+  senderId   String
+  sender     User     @relation("SentFriendRequests", fields: [senderId], references: [id])
+  receiverId String
+  receiver   User     @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+  status     String   @default("pending") // Can be "pending", "accepted", or "rejected"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Friend {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  friendId  String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, friendId])
 }
 
 model Post {

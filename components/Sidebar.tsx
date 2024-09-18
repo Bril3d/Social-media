@@ -5,13 +5,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { HomeIcon, UserIcon, BellIcon, SettingsIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import SearchBar from './SearchBar'
 import { ModeToggle } from './ModeToggle'
 
 export default function Sidebar() {
 	const { data: session } = useSession()
 
 	return (
-		<div className="w-64 bg-card text-card-foreground p-4 shadow-md flex flex-col min-h-full">
+		<aside className="w-64 bg-card text-card-foreground p-4 shadow-md flex flex-col min-h-full">
+			<div className="p-4">
+				<SearchBar />
+			</div>
 			<div className="flex items-center space-x-4 mb-6">
 				<Avatar>
 					<AvatarImage src={session?.user?.image || undefined} />
@@ -51,6 +55,13 @@ export default function Sidebar() {
 			<div className="mt-auto">
 				<ModeToggle />
 			</div>
-		</div>
+			{session?.user && (
+				<Link href={`/profile/${session.user.slug}`} passHref>
+					<Button variant="ghost" className="w-full justify-start">
+						Profile
+					</Button>
+				</Link>
+			)}
+		</aside>
 	)
 }

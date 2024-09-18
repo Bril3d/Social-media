@@ -7,7 +7,13 @@ interface ProfileWrapperProps {
     name: string;
     email: string;
     image?: string | null;
-    // Add other user fields as needed
+    slug: string;
+    avatar: string;
+    cover: string;
+    bio: string;
+    location: string;
+    website: string;
+    id: string;
   }
 }
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcrypt';
+import slugify from 'slugify';
 
 export async function GET() {
   try {
@@ -23,6 +24,7 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
+        slug: slugify(name),
       },
     })
 
